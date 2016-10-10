@@ -8,8 +8,15 @@ tourSize = 2;
 nbrOfIndividuals = 100;
 currentGen = zeros(nbrOfIndividuals,nCities);
 
+%Initialize all individuals to nearest neighbor path, starting from a
+%random city.
 for i = 1:nbrOfIndividuals
-  currentGen(i,:) = randperm(nCities);
+  currentGen(i,:) = GetNearestNeighbourPath(cityLocations);
+end
+
+%Shuffle 3-10 edges of all individuals except first.
+for i = 2:nbrOfIndividuals
+  
 end
 
 bestIndividual = currentGen(1,:);
