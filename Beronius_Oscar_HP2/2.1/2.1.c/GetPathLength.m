@@ -10,6 +10,7 @@ for i = 1:length(path)
   else
     to = cityLocations(path(i+1),:);
   end
+  
   len = sqrt((to(1)-from(1))^2+(to(2)-from(2))^2);
   totalLength = totalLength + len; 
 end

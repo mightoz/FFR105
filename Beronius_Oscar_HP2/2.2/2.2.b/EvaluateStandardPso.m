@@ -1,31 +1,45 @@
 function bestIndividual = EvaluateStandardPso(populationSize,dimensions,variableRange,cognitiveComponent,socialComponent,vMax,inertiaWeight,inertiaReduceFactor,inertiaMin,alpha,deltaT,f)
 
 particlePositions = InitializePositions(dimensions, populationSize, variableRange);
-particleVelocities = InitializeVelocities(dimensions, populationSize, variableRange, alpha, deltaT);
+particlePositions = fix(particlePositions); %Truncate
+particleVelocities = InitializeVelocities(dimensions, populationSize, variableRange, alpha, deltaT, vMax);
 
-particleBest = particlePositions; %Current best particle position
+particleBest = particlePositions; %Current best position for all particles
 particleBestValues = EvaluateParticles(particlePositions,f);
 [swarmBestVal, swarmBestIndex] = min(particleBestValues);
 
 swarmBest = particlePositions(swarmBestIndex,:);
 
-for i = 1:2500 
+for i = 1:200
   %Truncate values before evaluation
-  truncParticleBest = fix(particleBest);
-  truncParticlePositions = fix(particlePositions);
-  
+  %truncParticleBest = fix(particleBest);
+  %truncParticlePositions = fix(particlePositions);
+
   %Update particle and swarm best
-  [particleBestN,swarmBestN] = EvaluateBestPositions(truncParticleBest, truncParticlePositions, swarmBestVal, f);
+  [particleBestN,swarmBestN] = EvaluateBestPositions(particleBest, particlePositions, swarmBest, f);
   particleBest = particleBestN;
-  swarmBest = swarmBestN;
-  swarmBestVal = f(swarmBest);
+  
+  swarmBestNVal = f(swarmBestN);
+  if(swarmBestVal < swarmBestNVal)
+    disp('error')
+  end
+
+  if(swarmBestVal > swarmBestNVal)
+    swarmBest = swarmBestN;
+    swarmBestVal = f(swarmBest);
+  end
   
   %Update velocities and positions
   particleVelocities = UpdateVelocities(particlePositions, particleBest, swarmBest, particleVelocities, inertiaWeight, cognitiveComponent, socialComponent, deltaT, vMax);
   particlePositions = UpdateParticlePositions(particlePositions, particleVelocities, deltaT);
+  particlePositions = fix(particlePositions);
   
   if(inertiaWeight > inertiaMin)
-      inertiaWeight = inertiaWeight*inertiaReduceFactor;
+    inertiaWeight = inertiaWeight*inertiaReduceFactor;
+  end
+  
+  if(inertiaWeight < inertiaMin)
+    inertiaWeight = inertiaMin;
   end
  
 end

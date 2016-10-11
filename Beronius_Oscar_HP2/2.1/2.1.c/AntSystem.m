@@ -42,35 +42,36 @@ visibility = GetVisibility(cityLocation);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 minimumPathLength = inf;
 
-iIteration = 0;
+iIterations = 0;
+bestPath = 0;
 
-while (minimumPathLength > targetPathLength && iIteration < 300)
- iIteration = iIteration + 1;
-
- %%%%%%%%%%%%%%%%%%%%%%%%%%
- % Generate paths:
- %%%%%%%%%%%%%%%%%%%%%%%%%%
-
- pathCollection = [];
- pathLengthCollection = [];
- for k = 1:numberOfAnts
-  path = GeneratePath(pheromoneLevel, visibility, alpha, beta);   % To do: Write the GeneratePath function (and any necessary functions called by GeneratePath).
-  pathLength = GetPathLength(path,cityLocation);                  % To do: Write the GetPathLength function
-  if (pathLength < minimumPathLength)
-    minimumPathLength = pathLength;
-    disp(sprintf('Iteration %d, ant %d: path length = %.5f',iIteration,k,minimumPathLength));
-    PlotPath(connection,cityLocation,path);
+while (iIterations < 300) %minimumPathLength > targetPathLength &&
+  iIterations = iIterations + 1;
+  
+  %%%%%%%%%%%%%%%%%%%%%%%%%%
+  % Generate paths:
+  %%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+  pathCollection = [];
+  pathLengthCollection = [];
+  for k = 1:numberOfAnts
+    path = GeneratePath(pheromoneLevel, visibility, alpha, beta);
+    pathLength = GetPathLength(path,cityLocation);
+    if (pathLength < minimumPathLength)
+      bestPath = path;
+      minimumPathLength = pathLength;
+      disp(sprintf('Iteration %d, ant %d: path length = %.5f',iIterations,k,minimumPathLength));
+      PlotPath(connection,cityLocation,path);
+    end
+    pathCollection = [pathCollection; path];
+    pathLengthCollection = [pathLengthCollection; pathLength];
   end
-  pathCollection = [pathCollection; path];           
-  pathLengthCollection = [pathLengthCollection; pathLength];
- end
-
- %%%%%%%%%%%%%%%%%%%%%%%%%%
- % Update pheromone levels
- %%%%%%%%%%%%%%%%%%%%%%%%%%
-
- deltaPheromoneLevel = ComputeDeltaPheromoneLevels(pathCollection,pathLengthCollection);  % To do: write the ComputeDeltaPheromoneLevels function
- pheromoneLevel = UpdatePheromoneLevels(pheromoneLevel,deltaPheromoneLevel,rho);          % To do: write the UpdatePheromoneLevels function
-
+  
+  %%%%%%%%%%%%%%%%%%%%%%%%%%
+  % Update pheromone levels
+  %%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+  deltaPheromoneLevel = ComputeDeltaPheromoneLevels(pathCollection,pathLengthCollection);
+  pheromoneLevel = UpdatePheromoneLevels(pheromoneLevel,deltaPheromoneLevel,rho);
 end
 profile viewer %TODO REMOVE

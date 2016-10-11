@@ -1,11 +1,15 @@
-function [bestPositions,swarmBest] = EvaluateBestPositions(oldPositions, newPositions, swarmBest, f)
+function [bestPositions,swarmBestNew] = EvaluateBestPositions(oldPositions, newPositions, swarmBest, f)
   oldVals = EvaluateParticles(oldPositions, f);
   newVals = EvaluateParticles(newPositions, f);
   
   nbrOfParticles = length(oldVals);
   
   bestPositions = zeros(size(oldPositions));
-  swarmBest = inf;
+
+  swarmBestVal = f(swarmBest);
+  swarmBestNew = swarmBest;
+  
+  
   
   %Iterate through all particles
   for i = 1:nbrOfParticles 
@@ -20,12 +24,12 @@ function [bestPositions,swarmBest] = EvaluateBestPositions(oldPositions, newPosi
     end
     
     %Update swarm best if needed
-    if oldVal < swarmBest
-      swarmBest = oldPositions(i,:);
+    if oldVal < swarmBestVal
+      swarmBestNew = oldPositions(i,:);
     end
       
-    if newVal < swarmBest
-      swarmBest = newPositions(i,:);
+    if newVal < swarmBestVal
+      swarmBestNew = newPositions(i,:);
     end
   end
 

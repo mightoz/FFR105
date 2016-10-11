@@ -3,7 +3,7 @@ dimensions = 2;
 variableRange = [-10,10];
 cognitiveComponent = 2;
 socialComponent = 2;
-vMax = variableRange(2);
+vMax = variableRange(2)*2;
 inertiaWeight = 1.4;
 inertiaReduceFactor = 0.99;
 inertiaMin = 0.4;
@@ -16,9 +16,9 @@ bestIndividuals = zeros(100,2);
 
 for i = 1:100
   
-  individuals = zeros(30,3);
+  individuals = zeros(3,3);
    
-  for j = 1:30
+  for j = 1:3
     individual = EvaluateStandardPso(populationSize,dimensions,variableRange,cognitiveComponent,socialComponent,vMax,inertiaWeight,inertiaReduceFactor,inertiaMin,alpha,deltaT,f);
     individuals(j,:) = individual;
   end
@@ -31,6 +31,7 @@ for i = 1:100
   %Add best individual and it's value
   bestIndividuals(i,:) = bestIndividual;
   bestValues(i) = bestVal;
+  
 end
 
 bestValues

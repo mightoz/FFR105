@@ -9,23 +9,31 @@ particleBestValues = EvaluateParticles(particlePositions,f);
 
 swarmBest = particlePositions(swarmBestIndex,:);
 
-for i = 1:250 
+for i = 1:250
   
   %Update particle and swarm best
-  [particleBestN,swarmBestN] = EvaluateBestPositions(particleBest, particlePositions, swarmBestVal, f);
+  [particleBestN,swarmBestN] = EvaluateBestPositions(particleBest, particlePositions, swarmBest, f);
   particleBest = particleBestN;
-  swarmBest = swarmBestN;
-  swarmBestVal = f(swarmBest);
+  swarmBestNVal = f(swarmBestN);
+  
+  if(swarmBestNVal<swarmBestVal)
+    swarmBestVal = swarmBestNVal;
+    swarmBest = swarmBestN;
+  end
   
   %Update velocities and positions
   particleVelocities = UpdateVelocities(particlePositions, particleBest, swarmBest, particleVelocities, inertiaWeight, cognitiveComponent, socialComponent, deltaT, vMax);
   particlePositions = UpdateParticlePositions(particlePositions, particleVelocities, deltaT);
   
   if(inertiaWeight > inertiaMin)
-      inertiaWeight = inertiaWeight*inertiaReduceFactor;
+    inertiaWeight = inertiaWeight*inertiaReduceFactor;
   end
- 
+  
+  if(inertiaWeight < inertiaMin)
+    inertiaWeight = inertiaMin;
+  end
+  
 end
 
-bestIndividual = [swarmBest,swarmBestVal];
+bestIndividual = [swarmBest,swarmBestVal]
 end

@@ -13,7 +13,7 @@ function velocities = UpdateVelocities(particlePositions, particleBest, swarmBes
       
       velocity = particleVelocities(i,j);
       
-      velocity = velocity*inertiaWeight + cognitiveComponent*q*((currentBest - currentPosition)/deltaT) + socialComponent*r*((dimensionBest-velocity)/deltaT);
+      velocity = velocity*inertiaWeight + cognitiveComponent*q*((currentBest - currentPosition)/deltaT) + socialComponent*r*((dimensionBest-currentPosition)/deltaT);
       
       %Restrict velocity
       if norm(velocity) > vMax
