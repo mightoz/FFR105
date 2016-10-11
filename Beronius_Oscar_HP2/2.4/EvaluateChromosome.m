@@ -1,4 +1,4 @@
-function values = EvaluateChromosome(chromosomeStruct,operands,operations,inputValues)
+function values = EvaluateChromosome(chromosomeStruct,operands,operators,inputValues)
 
 chromosome = chromosomeStruct.Chromosome;
 
@@ -14,7 +14,7 @@ for i = 1:size(inputValues,2)
     operand1Index = chromosome(j+2);
     operand2Index = chromosome(j+3);
     
-    operation = operations{operationIndex};
+    operation = operators{operationIndex};
     operand1 = updatedRegisters(operand1Index);
     operand2 = updatedRegisters(operand2Index);
     

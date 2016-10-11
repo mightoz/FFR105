@@ -24,40 +24,45 @@ targetOutput = functionData(:,2)';
 
 %-------Standard parameters------
 populationSize = 100;
-generations = 1;
+generations = 40;
 pTour = 0.75;
 tournamentSize = 2;
 pMut = 0;
+pCross = 0.8;
 %-------Standard parameters------
 
-currentGen = InitializeGeneration(populationSize,numberOfGenes,geneSize,alleleRanges);
-%currentVals = EvaluateChromosome(currentGen(1),operands,operations,inputValues);
-generationValues = EvaluateGeneration(currentGen,operands,operations,inputValues);
-%generationFitness = CalculateGenerationFitness(generationValues,targetOutput);
-%[bestFitness,index] = max(generationFitness);
-%bestIndividual = currentGen(index,:);
+currentGen = InitializeGeneration(populationSize,numberOfGenes,geneSize,alleleRanges)
+currentVals = EvaluateChromosome(currentGen(1),operands,operators,inputValues);
+generationValues = EvaluateGeneration(currentGen,operands,operators,inputValues);
+generationFitness = CalculateGenerationFitness(generationValues,targetOutput);
+[bestFitness,index] = max(generationFitness)
+bestIndividual = currentGen(index).Chromosome;
 
-% for gen = 1:generations
-%   nextGen = currentGen;
-%   
-%   generationValues = EvaluateGeneration(currentGen,operands,operations,inputValues);
-%   generationFitness = CalculateGenerationFitness(generationValues,targetOutput);
-%   
-%   [bestFitness,index] = max(generationFitness);
-%   bestIndividual = currentGen(index,:);
-%   
-%   %Generate new generatin through tournament selection
-%   for i = 1:populationSize
-%     winnerIndex = TournamentSelect(generationFitness,pTour,tournamentSize);
-%     winner = currentGen(winnerIndex,:);
-%     nextGen(i,:) = winner;
-%   end
-%   
-%   currentGen = nextGen;
-% end
-%bestValues = EvaluateChromosome(bestIndividual,operands,operations,inputValues)
-%figure
-%gplot(inputValues,targetOutput,inputValues,bestValues)
+for gen = 1:generations
+  i
+  nextGen = currentGen;
+  
+  generationValues = EvaluateGeneration(currentGen,operands,operators,inputValues);
+  generationFitness = CalculateGenerationFitness(generationValues,targetOutput);
+  
+  [bestFitness,index] = max(generationFitness);
+  bestIndividual = currentGen(index).Chromosome;
+  
+  %Generate new generatin through tournament selection
+  for i = 1:populationSize
+    winnerIndex = TournamentSelect(generationFitness,pTour,tournamentSize);
+    winner = currentGen(winnerIndex);
+    nextGen(i) = winner;
+  end
+  
+  nextGen = PerformCrossover(nextGen,pCross);
+
+  currentGen = nextGen;
+end
+
+bestValues = EvaluateChromosome(bestIndividual,operands,operators,inputValues);
+figure
+plot(inputValues,targetOutput,inputValues,bestValues);
 
 
 
