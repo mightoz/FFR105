@@ -18,12 +18,11 @@ for i = 1:size(inputValues,2)
     operand1 = updatedRegisters(operand1Index);
     operand2 = updatedRegisters(operand2Index);
     
-    value = operation(operand1,operand2);
-    
     %Avoid divide by zero, set value to high.
     if(operationIndex == 4 && operand2 == 0)
       updatedRegisters(destinationIndex) = 100000;
     else
+      value = operation(operand1,operand2);
       updatedRegisters(destinationIndex) = value;
     end
     

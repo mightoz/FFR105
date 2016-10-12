@@ -1,6 +1,7 @@
+%profile on
 %-------Static parameters--------
 m = 3; %Number of registers
-n = 3; %Number of constants
+n = 4; %Number of constants
 
 %Function handles for operators {+,-,*,/}
 f1 = @(a,b)a+b;
@@ -10,10 +11,10 @@ f4 = @(a,b)a/b;
 operators = {f1,f2,f3,f4};
 
 registers = zeros(1,m);
-constants = [1,3,-1];
+constants = [1,3,-1,0];
 operands = [registers,constants];
 
-numberOfGenes = 5;
+numberOfGenesRange = [5,25];
 geneSize = 4;
 alleleRanges = [length(operators),m,m+n,m+n];
 
@@ -24,29 +25,38 @@ targetOutput = functionData(:,2)';
 
 %-------Standard parameters------
 populationSize = 100;
-generations = 40;
+generations = 5000;
 pTour = 0.75;
-tournamentSize = 2;
-pMut = 0;
-pCross = 0.8;
+tournamentSize = 5;
+pCross = 0.2;
 %-------Standard parameters------
 
-currentGen = InitializeGeneration(populationSize,numberOfGenes,geneSize,alleleRanges)
+%-------Custom parameters--------
+maxCrossoverLength = 5;
+%-------Custom parameters--------
+
+currentGen = InitializeGeneration(populationSize,numberOfGenesRange,geneSize,alleleRanges);
 currentVals = EvaluateChromosome(currentGen(1),operands,operators,inputValues);
 generationValues = EvaluateGeneration(currentGen,operands,operators,inputValues);
 generationFitness = CalculateGenerationFitness(generationValues,targetOutput);
 [bestFitness,index] = max(generationFitness)
-bestIndividual = currentGen(index).Chromosome;
+bestIndividual = currentGen(index);
 
 for gen = 1:generations
-  i
+  
   nextGen = currentGen;
   
   generationValues = EvaluateGeneration(currentGen,operands,operators,inputValues);
   generationFitness = CalculateGenerationFitness(generationValues,targetOutput);
   
-  [bestFitness,index] = max(generationFitness);
-  bestIndividual = currentGen(index).Chromosome;
+  [bestFitnessForGen,index] = max(generationFitness);
+  bestIndividualForGen = currentGen(index);
+  
+  if(bestFitnessForGen > bestFitness)
+    bestFitness = bestFitnessForGen
+    bestIndividual = bestIndividualForGen;
+    genNbr = gen
+  end
   
   %Generate new generatin through tournament selection
   for i = 1:populationSize
@@ -55,14 +65,18 @@ for gen = 1:generations
     nextGen(i) = winner;
   end
   
-  nextGen = PerformCrossover(nextGen,pCross);
-
+  nextGen = PerformCrossover(nextGen,pCross,maxCrossoverLength);
+  nextGen = PerformMutation(nextGen,alleleRanges);
+  
+  nextGen(1) = bestIndividual;
   currentGen = nextGen;
 end
-
+bestIndividual
 bestValues = EvaluateChromosome(bestIndividual,operands,operators,inputValues);
+bestFitness
+lowestError = CalculateError(bestValues,targetOutput)
 figure
 plot(inputValues,targetOutput,inputValues,bestValues);
 
-
+%profile viewer
 

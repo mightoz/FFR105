@@ -1,42 +1,71 @@
-function [firstAfterCross,secondAfterCross] = Cross(chromosomeOne,chromosomeTwo)
+function [firstAfterCross,secondAfterCross] = Cross(chromosomeOne,chromosomeTwo,maxCrossoverLength)
 
     %First chromosome
-    firstChromosome = chromosomeOne.Chromosome;
-    
+    firstChromosome = chromosomeOne.Chromosome;    
+    crossoverPointsFirst = GetCrossoverPoints(firstChromosome);
     firstChromosomeLen = length(firstChromosome);
     
-    %Indices of all gene beginnings in chromosome
-    geneIndicesFirst = 1:firstChromosomeLen;
-    geneIndicesFirst = find(mod(geneIndicesFirst,4)==0);
-    
-    %Make two points of crossover in chromosome
-    crossOverPointsFirst = sort(datasample(geneIndicesFirst,2)); %TODO: Maybe fix coding conventions.
-     
     %Second chromosome
-    secondChromosome = chromosomeTwo.Chromosome;
-    
+    secondChromosome = chromosomeTwo.Chromosome;   
+    crossoverPointsSecond = GetCrossoverPoints(secondChromosome);
     secondChromosomeLen = length(secondChromosome);
-    
-    %Indices of all gene beginnings in chromosome
-    geneIndicesSecond = 1:secondChromosomeLen;
-    geneIndicesSecond = find(mod(geneIndicesSecond,4)==0);
-    
-    %Make two points of crossover in chromosome
-    crossOverPointsSecond = sort(datasample(geneIndicesSecond,2)); %TODO: Maybe fix coding conventions.
-    
+
+     
     %Split up chromosomes
-    firstBeginning = firstChromosome(1:crossOverPointsFirst(1));
-    firstMiddle = firstChromosome(crossOverPointsFirst(1):crossOverPointsFirst(2));
-    firstEnd = firstChromosome(crossOverPointsFirst(2):firstChromosomeLen);
+    firstBeginning = firstChromosome(1:crossoverPointsFirst(1)-1);
+    firstMiddle = firstChromosome(crossoverPointsFirst(1):crossoverPointsFirst(2)-1);
+    firstEnd = firstChromosome(crossoverPointsFirst(2):firstChromosomeLen);
     
-    secondBeginning = secondChromosome(1:crossOverPointsSecond(1));
-    secondMiddle = secondChromosome(crossOverPointsSecond(1):crossOverPointsSecond(2));
-    secondEnd = secondChromosome(crossOverPointsSecond(2):secondChromosomeLen);
+    secondBeginning = secondChromosome(1:crossoverPointsSecond(1)-1);
+    secondMiddle = secondChromosome(crossoverPointsSecond(1):crossoverPointsSecond(2)-1);
+    secondEnd = secondChromosome(crossoverPointsSecond(2):secondChromosomeLen);
     
-    %Cross
-    firstChromosome = [firstBeginning,secondMiddle,firstEnd];
-    secondChromosome = [secondBeginning,firstMiddle,secondEnd];
+    %Build new chromosomes
+    firstNew = [firstBeginning,secondMiddle,firstEnd];
+    secondNew = [secondBeginning,firstMiddle,secondEnd];
+    firstNewLen = length(firstNew);
+    secondNewLen = length(secondNew);
     
-    firstAfterCross = struct('Chromosome',firstChromosome);
-    secondAfterCross = struct('Chromosome',secondChromosome);
+    %Convert to structs and return
+    firstAfterCross = struct('Chromosome',firstNew);
+    secondAfterCross = struct('Chromosome',secondNew);
+        
+    function crossoverPoints = GetCrossoverPoints(chromosome)
+      chromosomeLen = length(chromosome);
+    
+      %Indices of all genes in chromosome
+      tmpIndices = 1:chromosomeLen;
+      
+      %Find every fourth index in chromosome
+      everyFourthElement = find(mod(tmpIndices,4)==0);
+      
+      %Find indices of all gene starting points
+      geneIndices = everyFourthElement-3;
+      
+      %Remove first gene from selection -> always split chromosome in 3.
+      geneIndices(1) = [];
+      
+      numberOfGenes = length(geneIndices);
+    
+      %Randomly select two gene indexes
+      crossoverIndices = randperm(numberOfGenes,2);
+      
+      %Retrieve each index
+      firstCrossoverIndex = crossoverIndices(1);
+      secondCrossoverIndex = crossoverIndices(2);
+      
+      %Retrieve each crossover point in chromosome
+      firstCrossoverPoint = geneIndices(firstCrossoverIndex);
+      secondCrossoverPoint = geneIndices(secondCrossoverIndex);
+      
+      %If crossover span includes more than maxCrossoverLength # of
+      %instructions, limit amount of instructions to maxCrossoverLength
+      if (secondCrossoverPoint-firstCrossoverPoint) > maxCrossoverLength*4;
+        firstCrossoverPoint = secondCrossoverPoint -(maxCrossoverLength*4);
+      end
+      
+      %Sort crossover points in ascending order and return
+      crossoverPoints = sort([firstCrossoverPoint,secondCrossoverPoint]);
+    
+    end
 end

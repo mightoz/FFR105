@@ -3,6 +3,9 @@ function fitness = CalculateFitness(output,targetOutput)
   %output
   %targetOutput
   err = CalculateError(output,targetOutput);
-  
-  fitness = 1/err;
+  if(err == 0)
+    fitness = inf;
+  else
+    fitness = 1/err;
+  end
 end
